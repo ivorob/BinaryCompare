@@ -31,18 +31,9 @@ analyzeFile(const std::string& filename, size_t hash)
     in.close();
 }
 
-}
-
-int
-main(int argc, char *argv[])
+void
+printResult(const std::unordered_map<uint64_t,hashes>& linkage)
 {
-    files[std::hash<std::string>()(filename1)] = filename1;
-    files[std::hash<std::string>()(filename2)] = filename2;
-
-    for (const auto& file : files) {
-        analyzeFile(file.second, file.first);
-    }
-
     for (const auto& value : linkage) {
         std::cout << std::hex << LODWORD(value.first) << "  " << HIDWORD(value.first) << " " << value.second.size() << " [";
 
@@ -57,6 +48,21 @@ main(int argc, char *argv[])
 
         std::cout << "]" << std::endl;
     }
+}
+
+}
+
+int
+main(int argc, char *argv[])
+{
+    files[std::hash<std::string>()(filename1)] = filename1;
+    files[std::hash<std::string>()(filename2)] = filename2;
+
+    for (const auto& file : files) {
+        analyzeFile(file.second, file.first);
+    }
+
+    printResult(linkage);
 
     return 0;
 }
