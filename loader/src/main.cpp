@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include <thread>
+#include <future>
 #include <windows.h>
 #include "IPCManager.h"
 #include "SocketManagerImpl.h"
@@ -103,13 +104,14 @@ main(int argc, char *argv[])
         IPC::Manager manager(new IPC::SocketManagerImpl);
         manager.connectToServer();
 
-        std::list<std::thread> threads;
+        std::list<std::future<void>> threads;
         for (const auto& filename : files) {
-            threads.push_back(std::thread(&IPC::Manager::sendFile, &manager, filename));
+            std::future<void> f = std::async(std::launch::async, &IPC::Manager::sendFile, &manager, filename);
+            threads.push_back(std::move(f));
         }
 
-        for (auto& thread : threads) {
-            thread.join();
+        for (auto& future : threads) {
+            future.get(); //generate exception if needed
         }
     } catch (const std::exception& e) {
         std::cerr << "[ERROR]: " << e.what() << std::endl;
