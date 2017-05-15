@@ -111,7 +111,11 @@ main(int argc, char *argv[])
         }
 
         for (auto& future : threads) {
-            future.get(); //generate exception if needed
+            try {
+                future.get(); //generate exception if needed
+            } catch (const std::exception& e) {
+                std::cerr << "[ERROR]: " << e.what() << std::endl;
+            }
         }
     } catch (const std::exception& e) {
         std::cerr << "[ERROR]: " << e.what() << std::endl;
