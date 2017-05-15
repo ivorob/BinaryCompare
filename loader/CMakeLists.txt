@@ -1,0 +1,14 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
+PROJECT (loader)
+
+SET (SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+SET (INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+SET (SOURCES
+        ${SRC_DIR}/main.cpp
+        ${SRC_DIR}/IPCManager.cpp
+        ${SRC_DIR}/SocketManagerImpl.cpp)
+
+INCLUDE_DIRECTORIES (${INCLUDE_DIR})
+
+ADD_EXECUTABLE (loader ${SOURCES})
