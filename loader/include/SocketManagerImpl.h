@@ -9,7 +9,6 @@ class SocketManagerImpl : public AbstractManagerImpl {
 public:
     SocketManagerImpl();
 
-    void connectToServer() override;
     void sendFile(const std::string& filename) override;
 };
 

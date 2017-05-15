@@ -100,25 +100,20 @@ main(int argc, char *argv[])
         std::cerr << "[ERROR]: There no valid files to load!" << std::endl;
     }
 
-    try {
-        IPC::Manager manager(new IPC::SocketManagerImpl);
-        manager.connectToServer();
+    IPC::Manager manager(new IPC::SocketManagerImpl);
 
-        std::list<std::future<void>> threads;
-        for (const auto& filename : files) {
-            std::future<void> f = std::async(std::launch::async, &IPC::Manager::sendFile, &manager, filename);
-            threads.push_back(std::move(f));
-        }
+    std::list<std::future<void>> threads;
+    for (const auto& filename : files) {
+        std::future<void> f = std::async(std::launch::async, &IPC::Manager::sendFile, &manager, filename);
+        threads.push_back(std::move(f));
+    }
 
-        for (auto& future : threads) {
-            try {
-                future.get(); //generate exception if needed
-            } catch (const std::exception& e) {
-                std::cerr << "[ERROR]: " << e.what() << std::endl;
-            }
+    for (auto& future : threads) {
+        try {
+            future.get(); //generate exception if needed
+        } catch (const std::exception& e) {
+            std::cerr << "[ERROR]: " << e.what() << std::endl;
         }
-    } catch (const std::exception& e) {
-        std::cerr << "[ERROR]: " << e.what() << std::endl;
     }
 
     return 0;

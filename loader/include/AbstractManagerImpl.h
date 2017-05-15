@@ -9,7 +9,6 @@ class AbstractManagerImpl {
 public:
     virtual ~AbstractManagerImpl() = default;
 
-    virtual void connectToServer() = 0;
     virtual void sendFile(const std::string& filename) = 0;
 };
 

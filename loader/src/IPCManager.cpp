@@ -24,12 +24,6 @@ IPC::Manager::setImpl(AbstractManagerImpl *impl)
 }
 
 void
-IPC::Manager::connectToServer()
-{
-    getImpl().connectToServer();
-}
-
-void
 IPC::Manager::sendFile(const std::string& filename)
 {
     getImpl().sendFile(filename);

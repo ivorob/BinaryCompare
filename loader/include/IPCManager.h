@@ -11,7 +11,6 @@ public:
     Manager(AbstractManagerImpl *impl);
     ~Manager();
 
-    void connectToServer();
     void sendFile(const std::string& filename);
 
     AbstractManagerImpl& getImpl();
