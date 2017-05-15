@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <thread>
 #include <windows.h>
 #include "IPCManager.h"
 #include "SocketManagerImpl.h"
@@ -28,6 +29,21 @@ isValidFolder(const std::string& path)
           (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
+bool
+isFileAligned(const std::string& filename)
+{
+    bool aligned = false;
+
+    HANDLE fileHandle = CreateFile(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr,
+            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (fileHandle != INVALID_HANDLE_VALUE) {
+        aligned = (GetFileSize(fileHandle, nullptr) % 8) == 0;
+        CloseHandle(fileHandle);
+    }
+
+    return aligned;
+}
+
 void
 addFilesToAnalyze(std::list<std::string>& files, const std::string& folder)
 {
@@ -39,7 +55,7 @@ addFilesToAnalyze(std::list<std::string>& files, const std::string& folder)
         do {
             if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
                 std::string currentFile = folder + "\\" + findData.cFileName;
-                if (isFileExists(currentFile)) {
+                if (isFileExists(currentFile) && isFileAligned(currentFile)) {
                     files.push_back(currentFile);
                 }
             }
@@ -86,8 +102,14 @@ main(int argc, char *argv[])
     try {
         IPC::Manager manager(new IPC::SocketManagerImpl);
         manager.connectToServer();
+
+        std::list<std::thread> threads;
         for (const auto& filename : files) {
-            manager.sendFile(filename);
+            threads.push_back(std::thread(&IPC::Manager::sendFile, &manager, filename));
+        }
+
+        for (auto& thread : threads) {
+            thread.join();
         }
     } catch (const std::exception& e) {
         std::cerr << "[ERROR]: " << e.what() << std::endl;
