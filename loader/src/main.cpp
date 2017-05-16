@@ -3,6 +3,7 @@
 #include <list>
 #include <thread>
 #include <future>
+#include <winsock2.h>
 #include <windows.h>
 #include "IPCManager.h"
 #include "SocketManagerImpl.h"
