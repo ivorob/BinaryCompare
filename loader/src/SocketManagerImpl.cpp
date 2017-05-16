@@ -13,6 +13,17 @@ IPC::SocketManagerImpl::SocketManagerImpl()
 
 IPC::SocketManagerImpl::~SocketManagerImpl()
 {
+    SOCKET sockfd = INVALID_SOCKET;
+    try {
+        SOCKET sockfd = connectToServer();
+
+        uint32_t size = 0xffffffff;
+        send(sockfd, (const char *)&size, sizeof(size), 0);
+        closesocket(sockfd);
+    } catch (const std::exception&) {
+        closesocket(sockfd);
+    }
+
     WSACleanup();
 }
 
